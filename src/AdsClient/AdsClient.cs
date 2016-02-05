@@ -240,6 +240,19 @@ namespace Ads.Client
             return ReadBytesAsync(adsSymhandle.Symhandle, adsSymhandle.ByteLength);
         }
 
+        /// <summary>
+        /// Reads the value from the name of a twincat variable
+        /// </summary>
+        /// <param name="varName">A twincat variable like ".XXX" or "MAIN.YYY" etc.</param>
+        /// <returns>A byte[] with the value of the twincat variable</returns>
+        public async Task<byte[]> ReadBytesAsync<T>(string varName)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            var length = GenericHelper.GetByteLengthFromType<T>(DefaultStringLength);
+            var result = await ReadBytesAsync(varHandle, length);
+            return result;
+        }
+
         public async Task<byte[]> ReadBytesI_Async(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F020, offset, readLength);
@@ -287,6 +300,21 @@ namespace Ads.Client
         }
 
         /// <summary>
+        /// Read the value from the name of a twincat variable.
+        /// </summary>
+        /// <typeparam name="T">A type like byte, ushort, uint depending on the length of the twincat variable</typeparam>
+        /// <param name="varName">The name of the twincat variable.</param>
+        /// <param name="arrayLength">An optional array length.</param>
+        /// <param name="adsObj">An optional existing object.</param>
+        /// <returns>The value of the twincat variable</returns>
+        public async Task<T> ReadAsync<T>(string varName, uint arrayLength = 1, object adsObj = null)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            var result = await ReadAsync<T>(varHandle, arrayLength, adsObj);
+            return result;
+        }
+
+        /// <summary>
         /// Add a noticiation when a variable changes or cyclic after a defined time in ms
         /// </summary>
         /// <param name="varHandle">The handle returned by GetSymhandleByNameAsync</param>
@@ -298,6 +326,14 @@ namespace Ads.Client
         public Task<uint> AddNotificationAsync(uint varHandle, uint length, AdsTransmissionMode transmissionMode, uint cycleTime, object userData)
         {
             return AddNotificationAsync(varHandle, length, transmissionMode, cycleTime, userData, typeof(byte[]));
+        }
+
+        public async Task<uint> AddNotificationAsync<T>(string varName, AdsTransmissionMode transmissionMode, uint cycleTime, uint arraylength = 1, object userData = null)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            var length = GenericHelper.GetByteLengthFromType<T>(DefaultStringLength, arraylength);
+            var result = await AddNotificationAsync(varHandle, length, transmissionMode, cycleTime, userData, typeof(T));
+            return result;
         }
 
         public Task<uint> AddNotificationAsync(IAdsSymhandle adsSymhandle, AdsTransmissionMode transmissionMode, uint cycleTime, object userData)
@@ -323,7 +359,8 @@ namespace Ads.Client
             adsCommand.TypeOfValue = typeOfValue;
             var result = await adsCommand.RunAsync(this.ams);
             adsCommand.Notification.NotificationHandle = result.NotificationHandle;
-            return result.NotificationHandle; ;
+            adsCommand.Notification.Symhandle = varHandle;
+            return result.NotificationHandle;
         }
 
         public Task<uint> AddNotificationAsync(IAdsSymhandle adsSymhandle, AdsTransmissionMode transmissionMode, uint cycleTime, object userData, Type typeOfValue)
@@ -362,6 +399,13 @@ namespace Ads.Client
             return adsCommand.RunAsync(this.ams);
         }
 
+        public async Task DeleteNotificationAsync(string varName)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            var notificationHandle = this.ams.NotificationRequests.First(request => request.Symhandle == varHandle).NotificationHandle;
+            await DeleteNotificationAsync(notificationHandle);
+        }
+
         /// <summary>
         /// Write the value to the handle returned by GetSymhandleByNameAsync
         /// </summary>
@@ -371,6 +415,12 @@ namespace Ads.Client
         {
             AdsWriteCommand adsCommand = new AdsWriteCommand(0x0000F005, varHandle, varValue);
             return adsCommand.RunAsync(this.ams);
+        }
+
+        public async Task WriteBytesAsync(string varName, IEnumerable<byte> varValue)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            await WriteBytesAsync(varHandle, varValue);
         }
 
         public Task WriteBytesAsync(IAdsSymhandle adsSymhandle, IEnumerable<byte> varValue)
@@ -393,6 +443,12 @@ namespace Ads.Client
         public Task WriteAsync<T>(IAdsSymhandle adsSymhandle, T varValue) 
         {
             return WriteAsync<T>(adsSymhandle.Symhandle, varValue);
+        }
+
+        public async Task WriteAsync<T>(string varName, T varValue)
+        {
+            uint varHandle = await GetSymhandleByNameAsync(varName);
+            await WriteAsync<T>(varHandle, varValue);
         }
 
         /// <summary>
@@ -547,6 +603,13 @@ namespace Ads.Client
             return ReadBytes(adsSymhandle.Symhandle, adsSymhandle.ByteLength);
         }
 
+        public byte[] ReadBytes<T>(string varName)
+        {
+            uint varHandle = GetSymhandleByName(varName);
+            var length = GenericHelper.GetByteLengthFromType<T>(defaultStringLenght);
+            return ReadBytes(varHandle, length);
+        }
+
         public byte[] ReadBytesI(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F020, offset, readLength);
@@ -578,6 +641,12 @@ namespace Ads.Client
                 return GenericHelper.GetResultFromBytes<T>(value, DefaultStringLength, arrayLength, adsObj);
             else
                 return default(T);
+        }
+
+        public T Read<T>(string varName, uint arrayLength = 1, object adsObj = null)
+        {
+            var varHandle = GetSymhandleByName(varName);
+            return Read<T>(varHandle, arrayLength, adsObj);
         }
 
         /// <summary>
@@ -612,6 +681,13 @@ namespace Ads.Client
             return AddNotification(adsSymhandle.Symhandle, adsSymhandle.ByteLength, transmissionMode, cycleTime, userData);
         }
 
+        public uint AddNotification<T>(string varName, AdsTransmissionMode transmissionMode, uint cycleTime, object userData = null)
+        {
+            var varHandle = GetSymhandleByName(varName);
+            uint length = GenericHelper.GetByteLengthFromType<T>(DefaultStringLength);
+            return AddNotification(varHandle, length, transmissionMode, cycleTime, userData, typeof(T));
+        }
+
         /// <summary>
         /// Add a noticiation when a variable changes or cyclic after a defined time in ms
         /// </summary>
@@ -630,6 +706,7 @@ namespace Ads.Client
             adsCommand.TypeOfValue = TypeOfValue;
             var result = adsCommand.Run(this.ams);
             adsCommand.Notification.NotificationHandle = result.NotificationHandle;
+            adsCommand.Notification.Symhandle = varHandle;
             return result.NotificationHandle;
         }
 
@@ -669,6 +746,13 @@ namespace Ads.Client
             var result = adsCommand.Run(this.ams);
         }
 
+        public void DeleteNotification(string varName)
+        {
+            uint varHandle = GetSymhandleByName(varName);
+            var notificationHandle = this.ams.NotificationRequests.First(request => request.Symhandle == varHandle).NotificationHandle;
+            DeleteNotification(notificationHandle);
+        }
+
         /// <summary>
         /// Write the value to the handle returned by GetSymhandleByName
         /// </summary>
@@ -683,6 +767,12 @@ namespace Ads.Client
         public void WriteBytes(IAdsSymhandle adsSymhandle, IEnumerable<byte> varValue)
         {
             WriteBytes(adsSymhandle.Symhandle, varValue);
+        }
+
+        public void WriteBytes(string varName, IEnumerable<byte> varValue)
+        {
+            var varHandle = GetSymhandleByName(varName);
+            WriteBytes(varHandle, varValue);
         }
 
         /// <summary>
@@ -700,6 +790,12 @@ namespace Ads.Client
         public void Write<T>(IAdsSymhandle adsSymhandle, T varValue)
         {
             Write<T>(adsSymhandle, varValue);
+        }
+
+        public void Write<T>(string varName, T varValue)
+        {
+            var varHandle = GetSymhandleByName(varName);
+            Write<T>(varHandle, varValue);
         }
 
         /// <summary>

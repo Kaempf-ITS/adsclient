@@ -39,6 +39,7 @@ namespace Ads.Client.Common
         public byte[] ByteValue { get; set; }
         public Type TypeOfValue { get; set; }
         public object UserData { get; set; }
+        public uint Symhandle { get; set; }
 
         public object Value { get { return ByteArrayHelper.ByteArrayToTypeValue(ByteValue, TypeOfValue); } }
 

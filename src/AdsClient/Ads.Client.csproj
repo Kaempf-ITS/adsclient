@@ -35,7 +35,10 @@
   <ItemGroup>
     <Compile Include="AmsSocketBaseSync.cs" />
     <Compile Include="AmsSocketBaseAsync.cs" />
+    <Compile Include="Helpers\AmsPort.cs" />
     <Compile Include="Helpers\MemberInfoHelper.cs" />
+    <Compile Include="Helpers\SmType.cs" />
+    <Compile Include="Helpers\StType.cs" />
     <Compile Include="IAmsSocketAsync.cs" />
     <Compile Include="IAmsSocketSync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,5 +87,4 @@
     <Compile Include="IAmsSocket.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <ItemGroup />
 </Project>

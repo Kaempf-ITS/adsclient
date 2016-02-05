@@ -1,5 +1,8 @@
 ﻿namespace Ads.Client.Helpers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum AmsPort : int
     {
         Router = 1,
@@ -8,12 +11,12 @@
         EventLog = 110,
         R0_Realtime = 200,
         R0_Trace = 290,
-        Tc2_R0_IO = 300,
-        Tc2_R0_AdditionalTask1 = 301,
-        Tc2_R0_AdditionalTask2 = 302,
-        Tc3_R0_IO = 350,
-        Tc3_R0_AddTask1 = 350,
-        Tc3_R0_AddTask2 = 351,
+        R0_Tc2_IO = 300,
+        R0_Tc2_AdditionalTask1 = 301,
+        R0_Tc2_AdditionalTask2 = 302,
+        R0_Tc3_IO = 350,
+        R0_Tc3_AdditionalTask1 = 350,
+        R0_Tc3_AdditionalTask2 = 351,
         R0_NC = 500,
         R0_NCSAF = 501,
         R0_NCSVB = 511,
@@ -21,14 +24,14 @@
         R0_CNC = 600,
         R0_LINE = 700,
         R0_PLC = 800,
-        Tc2_PlcRuntime1 = 801,
-        Tc2_PlcRuntime2 = 811,
-        Tc2_PlcRuntime3 = 821,
-        Tc2_PlcRuntime4 = 831,
-        Tc3_PlcRuntime1 = 851,
-        Tc3_PlcRuntime2 = 852,
-        Tc3_PlcRuntime3 = 853,
-        Tc3_PlcRuntime4 = 854,
+        PlcTc2_Runtime1 = 801,
+        PlcTc2_Runtime2 = 811,
+        PlcTc2_Runtime3 = 821,
+        PlcTc2_Runtime4 = 831,
+        PlcTc3_Runtime1 = 851,
+        PlcTc3_Runtime2 = 852,
+        PlcTc3_Runtime3 = 853,
+        PlcTc3_Runtime4 = 854,
         CamshaftController = 900,
         R0_CAMTOOL = 950,
         R0_USER = 2000,

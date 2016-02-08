@@ -1,0 +1,10 @@
+﻿using System.Reflection;
+[assembly: AssemblyTitle("AdsClient.Finder")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("nik")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("nik")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("0.1")]

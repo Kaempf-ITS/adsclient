@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public enum AmsPort : int
+    public enum AmsPort : ushort
     {
         Router = 1,
         Debugger = 2,

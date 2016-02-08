@@ -38,7 +38,7 @@ namespace Ads.Client.Helpers
             return id;
         }
 
-        public static ushort GetAmsPortTarget(byte[] amsHeader)
+        public static ushort GetAmsPortTarget(byte[] amsHeader) //-V3013
         {
             return BitConverter.ToUInt16(amsHeader, 14);
         }

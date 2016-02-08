@@ -307,7 +307,7 @@ namespace Ads.Client.Helpers
 
         private static uint GetByteLengthFromConvertible(AdsTypeEnum adsType, uint defaultStringLength)
         {
-            uint length = 0;
+            uint length;
 
             switch (adsType)
             {
@@ -325,6 +325,8 @@ namespace Ads.Client.Helpers
                 case AdsTypeEnum.DateTime: length = 4; break;
                 case AdsTypeEnum.Date: length = 4; break;
                 case AdsTypeEnum.Time: length = 4; break;
+                case AdsTypeEnum.Char: length = 1; break;
+                default: length = 0; break;
             }
 
             return length;

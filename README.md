@@ -15,7 +15,7 @@ AdsClient.WinRT can be use in Widows 8.1 WinRT/Phone.
 
 Contributors
 ============
-MrCircuit (https://github.com/MrCircuit)
+MrCircuit (https://github.com/MrCircuit)  
 nikvoronin (https://github.com/nikvoronin)
 
 Getting started
@@ -56,7 +56,7 @@ You must also configure a route for your android device.
 External documentation
 ----------------------
 
-[Specification for the ADS/AMS protocol](http://infosys.beckhoff.com/english.php?content=../content/1033/TcAdsAmsSpec/HTML/TcAdsAmsSpec_Intro.htm&id=)
+[Specification for the ADS/AMS protocol](http://infosys.beckhoff.com/english.php?content=../content/1033/TcAdsAmsSpec/HTML/TcAdsAmsSpec_Intro.htm&id=) [Twincat 3](http://infosys.beckhoff.de/content/1031/tc3_adscommon/html/tcadsamsspec_amstcppackage.htm)
 
 [Index-Group/Offset specification](http://infosys.beckhoff.com/content/1033/tcadsdeviceplc/html/tcadsdeviceplc_intro.htm?id=11742)
 

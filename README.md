@@ -10,7 +10,7 @@ This library contains sync and async methods.
 You can't combine them.
 
 AdsClient is the Portable Class Library.  
-AdsClient.WinSock can be used in normal .Net programs and Mono/Xamarin.  
+AdsClient.WinSock, AdsClient.Finder can be used in normal .Net programs and Mono/Xamarin.  
 AdsClient.WinRT can be use in Widows 8.1 WinRT/Phone.  
 
 Contributors
@@ -30,6 +30,9 @@ You can use the Twincat Remote Manager for example.
 On a CX9001 device you can connect with cerhost.exe and add a route with 
 \Hard Disk\System\TcAmsRemoteMgr.exe
 (You may not to reboot after this!)
+
+You can use AdsClient.Finder.DeviceFinder for broadcast searching of network PLCs.
+With help of AdsClient.Finder.RouteManager you can add new route record into the remote PLC.
 
 *If the library is not working, an incorrect/missing route may be the problem!.*
 
@@ -98,10 +101,8 @@ using (AdsClient client = new AdsClient(
         ipTarget: "10.0.0.2",
         amsNetIdTarget: "5.1.204.160.1.1"))
 {
-    uint varHandle = client.GetSymhandleByName(".TestVar");
-    client.Write<byte>(varHandle, 0);
-    byte value = client.Read<byte>(varHandle);
-    client.ReleaseSymhandle(varHandle);
+    client.Write<byte>("MAIN.TestVar", 0);
+    byte value = client.Read<byte>("MAIN.TestVar");
 }
 ```
 
@@ -113,10 +114,8 @@ using (AdsClient client = new AdsClient(
         ipTarget: "10.0.0.2",
         amsNetIdTarget: "5.1.204.160.1.1"))
 {
-    uint varHandle = await client.GetSymhandleByNameAsync(".TestVar");
-    await client.WriteAsync<byte>(varHandle, 0);
-    byte value = await client.ReadAsync<byte>(varHandle);
-    await client.ReleaseSymhandleAsync(varHandle);
+    await client.Write<byte>("MAIN.TestVar", 0);
+    byte value = await client.Read<byte>("MAIN.TestVar");
 }
 ```
 
@@ -131,11 +130,9 @@ using (AdsClient client = new AdsClient(
         amsNetIdTarget: "5.1.204.160.1.1"))
 {
   client.OnNotification += (sender, e) => { Console.WriteLine(e.Notification.ToString()); };
-  uint hVar1 = client.GetSymhandleByName(".VarTest1");
-  uint hVar2 = client.GetSymhandleByName(".VarTest2");
-  uint hNoti1 = client.AddNotification<byte>(hVar1, 
+  uint hNoti1 = client.AddNotification<byte>("MAIN.VarTest1", 
                                     AdsTransmissionMode.Cyclic, 2000, null);
-  uint hNoti2 = client.AddNotification<byte>(hVar2, 
+  uint hNoti2 = client.AddNotification<byte>("MAIN.VarTest2", 
                                     AdsTransmissionMode.OnChange, 10, null);
   Thread.Sleep(5000);
 }
@@ -184,33 +181,24 @@ namespace AdsTest
                 Console.WriteLine(e.Notification.ToString()); 
           };
 
-          uint varHandle1 = await client.GetSymhandleByNameAsync(".VariableName1");
-          Console.WriteLine("Variable1 handle: " + varHandle1.ToString());
-
-          uint varHandle2 = await client.GetSymhandleByNameAsync(".VariableName2");
-          Console.WriteLine("Variable2 handle: " + varHandle2.ToString());
-
           uint notification1Handle = await client.AddNotificationAsync<byte>(
-                varHandle1, AdsTransmissionMode.Cyclic, 5000, null);
+                ".VariableName1", AdsTransmissionMode.Cyclic, 5000, null);
           uint notification2Handle = await client.AddNotificationAsync<byte>(
-                varHandle2, AdsTransmissionMode.OnChange, 10, null);
+                ".VariableName2", AdsTransmissionMode.OnChange, 10, null);
 
-          byte value = await client.ReadAsync<byte>(varHandle1);
+          byte value = await client.ReadAsync<byte>(".VariableName1");
           Console.WriteLine("Value before write: " + value.ToString());
 
-          await client.WriteAsync<byte>(varHandle1, 1);
+          await client.WriteAsync<byte>(".VariableName1", 1);
           Console.WriteLine("I turned something on");
 
-          value = await client.ReadAsync<byte>(varHandle1);
+          value = await client.ReadAsync<byte>(".VariableName1");
           Console.WriteLine("Value after write: " + value.ToString());
 
           await Task.Delay(5000);  
 
-          await client.WriteAsync<byte>(varHandle1, 0);
+          await client.WriteAsync<byte>(".VariableName1", 0);
           Console.WriteLine("I turned something off");
-
-          Console.WriteLine("Deleting active notifications...");
-          await client.DeleteActiveNotificationsAsync();
       }
     }
   }
@@ -273,3 +261,33 @@ using (AdsClient client = new AdsClient(
 }
 ```
 
+### Broadcast searching
+
+```C#
+IPAddress localhost = IPAddress.Parse("192.168.1.10");
+List<DeviceInfo> devices = await DeviceFinder.BroadcastSearchAsync(localhost, 1000);
+foreach (DeviceInfo d in devices)
+{
+  Console.WriteLine("IP: " + d.Address.ToString());
+  Console.WriteLine("AmsNetId: " + d.AmsNetId.ToString());
+  Console.WriteLine("Name: " + d.Name);
+  Console.WriteLine("Comment: " + d.Comment);
+  Console.WriteLine("OS version: " + d.OsVersion);
+  Console.WriteLine("TwinCAT: " + d.TcVersion);
+  Console.WriteLine("Runtime: " + (d.IsRuntime ? "present" : "not present (engineering)"));
+}
+```
+
+### Add remote route
+
+```C#
+IPAddress localhost = IPAddress.Parse("192.168.1.10");
+IPAddress plcIpAddress = IPAddress.Parse("192.168.1.33");
+
+RouteInfo info = new RouteInfo();
+info.Localhost = localhost.ToString();
+info.LocalAmsNetId = new AdsNetId("192.168.56.1.1.1");
+info.IsTemporaryRoute = false;
+
+bool isSuccessful = await RouteManager.AddRemoteRouteAsync(localhost, plcIpAddress, info, 1000);
+```

@@ -32,26 +32,40 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.0.5813.39035, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NUnit.3.0.1\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdsCommandsAsyncTest.cs" />
+    <Compile Include="RouteManagerTest.cs" />
+    <Compile Include="DeviceFinderTest.cs" />
     <Compile Include="AdsCommandsTest.cs" />
     <Compile Include="AmsSocketTest.cs" />
     <Compile Include="AmsSocketAsyncTest.cs" />
     <Compile Include="AmsSocketSyncTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\AdsClient.Finder\AdsClient.Finder.csproj">
+      <Project>{20824a7a-9971-43b3-bf29-4537a3e9c190}</Project>
+      <Name>AdsClient.Finder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AdsClient.Winsock\Ads.Client.Winsock.csproj">
+      <Project>{b53b6602-ef65-4c8d-a55e-beba2f84398e}</Project>
+      <Name>Ads.Client.Winsock</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AdsClient\Ads.Client.csproj">
       <Project>{FDF3424C-C451-4790-BBFE-187FBE06BD57}</Project>
       <Name>Ads.Client</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

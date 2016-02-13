@@ -78,8 +78,7 @@ namespace Ads.Client
                                     ByteArrayHelper.ByteArrayToTestString(response));
 #endif
 
-                            var syncContext = synchronizationContext;
-                            if (usertoken != null) syncContext = usertoken as SynchronizationContext;
+                            SynchronizationContext syncContext = usertoken != null ? usertoken : synchronizationContext;
 
                             var callbackArgs = new AmsSocketResponseArgs() { 
                                 Response = response, 

@@ -484,7 +484,7 @@ namespace Ads.Client
 
         public async Task ReleaseActiveSymhandlesAsync()
         {
-            var handles = new List<uint>();
+            List<uint> handles;
 
             lock (activeSymhandlesLock)
             {
@@ -833,7 +833,7 @@ namespace Ads.Client
 
         public void ReleaseActiveSymhandles()
         {
-            var handles = new List<uint>();
+            List<uint> handles;
 
             lock (activeSymhandlesLock)
             {

@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ads.Client.Winsock", "AdsCl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsClient.Test", "AdsClient.Test\AdsClient.Test.csproj", "{39A1FBFC-72EC-46A3-8889-1ECBDD52C35E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdsClient.Finder", "AdsClient.Finder\AdsClient.Finder.csproj", "{20824A7A-9971-43B3-BF29-4537A3E9C190}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ads.Client.Finder", "AdsClient.Finder\Ads.Client.Finder.csproj", "{20824A7A-9971-43B3-BF29-4537A3E9C190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ads.Client.Wrap", "AdsClient.Wrap\Ads.Client.Wrap.csproj", "{29FF03D3-92C1-45BE-801C-96C0B96F2CE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{20824A7A-9971-43B3-BF29-4537A3E9C190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20824A7A-9971-43B3-BF29-4537A3E9C190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20824A7A-9971-43B3-BF29-4537A3E9C190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29FF03D3-92C1-45BE-801C-96C0B96F2CE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29FF03D3-92C1-45BE-801C-96C0B96F2CE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29FF03D3-92C1-45BE-801C-96C0B96F2CE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29FF03D3-92C1-45BE-801C-96C0B96F2CE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

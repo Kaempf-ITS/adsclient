@@ -263,6 +263,7 @@ using (AdsClient client = new AdsClient(
 ```
 
 ### Broadcast searching
+You can easily obtain IP-address of the localhost even for different network interfaces (ex.: wired ethernet, wifi, etc.) Just use Ads.Client.Finder.Helpers.IPHelper.Localhosts to obtain IP-addresses of predefined network interfaces like wifi and wired-ethernet. You should use FilteredLocalhosts(List<NetworkInterfaceType>) to define which types of networks you will use.
 
 ```C#
 IPAddress localhost = IPAddress.Parse("192.168.1.10");

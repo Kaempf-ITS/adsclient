@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 namespace Ads.Client.Finder.Helpers
 {
-    public class IPHelper
+    public static class IPHelper
     {
         public static IPAddress GetBroadcastAddress(IPAddress localhost)
         {

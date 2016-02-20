@@ -1,6 +1,6 @@
 ﻿namespace Ads.Client.Finder.Common
 {
-    public class Segment
+    public static class Segment
     {
         public static readonly byte[] HEADER = { 0x03, 0x66, 0x14, 0x71 };
         public static readonly byte[] END = { 0, 0, 0, 0 };

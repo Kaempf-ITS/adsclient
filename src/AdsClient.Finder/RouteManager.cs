@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Ads.Client.Finder
 {
-    public class RouteManager
+    public static class RouteManager
     {
         /// <summary>
         /// Add new route to remote PLC.
@@ -20,7 +20,7 @@ namespace Ads.Client.Finder
             IPAddress remoteHost,
             RouteInfo routeInfo,
             int timeout = 10000,
-            int adsUdpPort = 48899)
+            int adsUdpPort = Request.DEFAULT_UDP_PORT)
         {
             byte[] Segment_AMSNETID = routeInfo.LocalAmsNetId.Bytes;
 

@@ -1,6 +1,5 @@
 ﻿using Ads.Client.Finder.Common;
 using Ads.Client.Finder.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Ads.Client.Finder
 {
-    public class DeviceFinder
+    public static class DeviceFinder
     {
-        public static async Task<List<DeviceInfo>> BroadcastSearchAsync(IPAddress localhost, int timeout = 10000, int adsUdpPort = 48899)
+        public static async Task<List<DeviceInfo>> BroadcastSearchAsync(IPAddress localhost, int timeout = 10000, int adsUdpPort = Request.DEFAULT_UDP_PORT)
         {
-            Request request = CreateSearchRequest(localhost, timeout, adsUdpPort);
+            Request request = CreateSearchRequest(localhost, timeout);
 
             IPEndPoint broadcast =
                 new IPEndPoint(
@@ -33,9 +32,9 @@ namespace Ads.Client.Finder
             return devices;
         }
 
-        public static async Task<DeviceInfo> GetDeviceInfoAsync(IPAddress localhost, IPAddress remoteHost, int timeout = 10000, int adsUdpPort = 48899)
+        public static async Task<DeviceInfo> GetDeviceInfoAsync(IPAddress localhost, IPAddress remoteHost, int timeout = 10000, int adsUdpPort = Request.DEFAULT_UDP_PORT)
         {
-            Request request = CreateSearchRequest(localhost, timeout, adsUdpPort);
+            Request request = CreateSearchRequest(localhost, timeout);
 
             IPEndPoint broadcast = new IPEndPoint(remoteHost, adsUdpPort);
 
@@ -46,9 +45,9 @@ namespace Ads.Client.Finder
             return device;
         }
 
-        public static Request CreateSearchRequest(IPAddress localhost, int timeout = 10000, int adsUdpPort = 48899)
+        public static Request CreateSearchRequest(IPAddress localhost, int timeout = 10000)
         {
-            Request request = new Request(timeout, adsUdpPort);
+            Request request = new Request(timeout);
 
             byte[] Segment_AMSNETID = Segment.AMSNETID;
             localhost.GetAddressBytes().CopyTo(Segment_AMSNETID, 0);

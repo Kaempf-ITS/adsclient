@@ -145,7 +145,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varName">A twincat variable like ".XXX"</param>
         /// <returns>The handle</returns>
-        public async Task<uint> GetSymhandleByNameAsync(string varName) 
+        public virtual async Task<uint> GetSymhandleByNameAsync(string varName) 
         {
             // Check, if the handle is already present.
             lock (activeSymhandlesLock)
@@ -185,7 +185,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="symhandle">The handle returned by GetSymhandleByName</param>
         /// <returns>An awaitable task.</returns>
-        public Task ReleaseSymhandleAsync(uint symhandle)
+        public virtual Task ReleaseSymhandleAsync(uint symhandle)
         {
             // Perform a reverse-lookup at the dictionary.
             lock (activeSymhandlesLock)
@@ -228,7 +228,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varHandle">The handle returned by GetSymhandleByNameAsync</param>
         /// <returns>A byte[] with the value of the twincat variable</returns>
-        public async Task<byte[]> ReadBytesAsync(uint varHandle, uint readLength)
+        public virtual async Task<byte[]> ReadBytesAsync(uint varHandle, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F005, varHandle, readLength);
             var result = await adsCommand.RunAsync(this.ams);
@@ -253,14 +253,14 @@ namespace Ads.Client
             return result;
         }
 
-        public async Task<byte[]> ReadBytesI_Async(uint offset, uint readLength)
+        public virtual async Task<byte[]> ReadBytesI_Async(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F020, offset, readLength);
             var result = await adsCommand.RunAsync(this.ams);
             return result.Data;
         }
 
-        public async Task<byte[]> ReadBytesQ_Async(uint offset, uint readLength)
+        public virtual async Task<byte[]> ReadBytesQ_Async(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F030, offset, readLength);
             var result = await adsCommand.RunAsync(this.ams);
@@ -351,7 +351,7 @@ namespace Ads.Client
         /// <param name="userData">A custom object that can be used in the callback</param>
         /// <param name="typeOfValue">The type of the returned notification value</param>
         /// <returns>The notification handle</returns>
-        public async Task<uint> AddNotificationAsync(uint varHandle, uint length, AdsTransmissionMode transmissionMode, uint cycleTime, object userData, Type typeOfValue)
+        public virtual async Task<uint> AddNotificationAsync(uint varHandle, uint length, AdsTransmissionMode transmissionMode, uint cycleTime, object userData, Type typeOfValue)
         {
             var adsCommand = new AdsAddDeviceNotificationCommand(0x0000F005, varHandle, length, transmissionMode);
             adsCommand.CycleTime = cycleTime;
@@ -393,7 +393,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="notificationHandle">The handle returned by AddNotification(Async)</param>
         /// <returns></returns>
-        public Task DeleteNotificationAsync(uint notificationHandle)
+        public virtual Task DeleteNotificationAsync(uint notificationHandle)
         {
             var adsCommand = new AdsDeleteDeviceNotificationCommand(notificationHandle);
             return adsCommand.RunAsync(this.ams);
@@ -411,7 +411,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varHandle">The handle returned by GetSymhandleByNameAsync</param>
         /// <param name="varValue">The byte[] value to be sent</param>
-        public Task WriteBytesAsync(uint varHandle, IEnumerable<byte> varValue)
+        public virtual Task WriteBytesAsync(uint varHandle, IEnumerable<byte> varValue)
         {
             AdsWriteCommand adsCommand = new AdsWriteCommand(0x0000F005, varHandle, varValue);
             return adsCommand.RunAsync(this.ams);
@@ -455,7 +455,7 @@ namespace Ads.Client
         /// Get some information of the ADS device (version, name)
         /// </summary>
         /// <returns></returns>
-        public async Task<AdsDeviceInfo> ReadDeviceInfoAsync()
+        public virtual async Task<AdsDeviceInfo> ReadDeviceInfoAsync()
         {
             AdsReadDeviceInfoCommand adsCommand = new AdsReadDeviceInfoCommand();
             var result = await adsCommand.RunAsync(this.ams);
@@ -466,23 +466,22 @@ namespace Ads.Client
         /// Read the ads state 
         /// </summary>
         /// <returns></returns>
-        public async Task<AdsState> ReadStateAsync()
+        public virtual async Task<AdsState> ReadStateAsync()
         {
             var adsCommand = new AdsReadStateCommand();
             var result = await adsCommand.RunAsync(this.ams);
             return result.AdsState;
         }
 
-        public async Task DeleteActiveNotificationsAsync()
+        public virtual async Task DeleteActiveNotificationsAsync()
         {
-
             while (ams.NotificationRequests.Count > 0)
             {
                 await DeleteNotificationAsync(ams.NotificationRequests[0].NotificationHandle);
             }
         }
 
-        public async Task ReleaseActiveSymhandlesAsync()
+        public virtual async Task ReleaseActiveSymhandlesAsync()
         {
             List<uint> handles;
 
@@ -506,7 +505,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varName">A twincat variable like ".XXX"</param>
         /// <returns>The handle</returns>
-        public uint GetSymhandleByName(string varName)
+        public virtual uint GetSymhandleByName(string varName)
         {
             // Check, if the handle is already present.
             lock (activeSymhandlesLock)
@@ -556,22 +555,19 @@ namespace Ads.Client
         /// Release symhandle
         /// </summary>
         /// <param name="symhandle">The handle returned by GetSymhandleByName</param>
-        public void ReleaseSymhandle(uint symhandle)
+        public virtual void ReleaseSymhandle(uint symhandle)
         {
             // Perform a reverse-lookup at the dictionary.
             lock (activeSymhandlesLock)
             {
-                var key = "";
-
                 foreach (var kvp in activeSymhandles)
                 {
-                    if (kvp.Value != symhandle)
-                        continue;
-                    key = kvp.Key;
-                    break;
+                    if (kvp.Value == symhandle)
+                    {
+                        activeSymhandles.Remove(kvp.Key);
+                        break;
+                    }
                 }
-
-                activeSymhandles.Remove(key);
             }
 
             ReleaseSymhandleInternal(symhandle);
@@ -591,7 +587,7 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varHandle">The handle returned by GetSymhandleByName</param>
         /// <returns>A byte[] with the value of the twincat variable</returns>
-        public byte[] ReadBytes(uint varHandle, uint readLength)
+        public virtual byte[] ReadBytes(uint varHandle, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F005, varHandle, readLength);
             var result = adsCommand.Run(this.ams);
@@ -610,14 +606,14 @@ namespace Ads.Client
             return ReadBytes(varHandle, length);
         }
 
-        public byte[] ReadBytesI(uint offset, uint readLength)
+        public virtual byte[] ReadBytesI(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F020, offset, readLength);
             var result = adsCommand.Run(this.ams);
             return result.Data;
         }
 
-        public byte[] ReadBytesQ(uint offset, uint readLength)
+        public virtual byte[] ReadBytesQ(uint offset, uint readLength)
         {
             AdsReadCommand adsCommand = new AdsReadCommand(0x0000F030, offset, readLength);
             var result = adsCommand.Run(this.ams);
@@ -698,7 +694,7 @@ namespace Ads.Client
         /// <param name="userData">A custom object that can be used in the callback</param>
         /// <param name="TypeOfValue">The type of the returned notification value</param>
         /// <returns>The notification handle</returns>
-        public uint AddNotification(uint varHandle, uint length, AdsTransmissionMode transmissionMode, uint cycleTime, object userData, Type TypeOfValue)
+        public virtual uint AddNotification(uint varHandle, uint length, AdsTransmissionMode transmissionMode, uint cycleTime, object userData, Type TypeOfValue)
         {
             var adsCommand = new AdsAddDeviceNotificationCommand(0x0000F005, varHandle, length, transmissionMode);
             adsCommand.CycleTime = cycleTime;
@@ -740,13 +736,13 @@ namespace Ads.Client
         /// </summary>
         /// <param name="notificationHandle">The handle returned by AddNotification</param>
         /// <returns></returns>
-        public void DeleteNotification(uint notificationHandle)
+        public virtual void DeleteNotification(uint notificationHandle)
         {
             var adsCommand = new AdsDeleteDeviceNotificationCommand(notificationHandle);
-            var result = adsCommand.Run(this.ams);
+            adsCommand.Run(this.ams);
         }
 
-        public void DeleteNotification(string varName)
+        public virtual void DeleteNotification(string varName)
         {
             uint varHandle = GetSymhandleByName(varName);
             var notificationHandle = this.ams.NotificationRequests.First(request => request.Symhandle == varHandle).NotificationHandle;
@@ -758,10 +754,10 @@ namespace Ads.Client
         /// </summary>
         /// <param name="varHandle">The handle returned by GetSymhandleByName</param>
         /// <param name="varValue">The byte[] value to be sent</param>
-        public void WriteBytes(uint varHandle, IEnumerable<byte> varValue)
+        public virtual void WriteBytes(uint varHandle, IEnumerable<byte> varValue)
         {
             AdsWriteCommand adsCommand = new AdsWriteCommand(0x0000F005, varHandle, varValue);
-            var result = adsCommand.Run(this.ams);
+            adsCommand.Run(this.ams);
         }
 
         public void WriteBytes(IAdsSymhandle adsSymhandle, IEnumerable<byte> varValue)
@@ -820,7 +816,7 @@ namespace Ads.Client
             return result.AdsState;
         }
 
-        public void DeleteActiveNotifications()
+        public virtual void DeleteActiveNotifications()
         {
             if (ams.NotificationRequests != null)
             {
@@ -831,7 +827,7 @@ namespace Ads.Client
             }
         }
 
-        public void ReleaseActiveSymhandles()
+        public virtual void ReleaseActiveSymhandles()
         {
             List<uint> handles;
 

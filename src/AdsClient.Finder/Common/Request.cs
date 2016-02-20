@@ -8,22 +8,30 @@ namespace Ads.Client.Finder.Common
 {
     public class Request
     {
+        public const int DEFAULT_UDP_PORT = 48899;
+
         UdpClient client;
         public UdpClient Client { get { return client; } }
-        public int Timeout;
+		
+        public int timeout;
+		public int Timeout
+		{
+			get { return timeout; }
+			
+			set 
+			{
+				timeout = value;
+				client.Client.ReceiveTimeout = client.Client.SendTimeout = Timeout;
+			}
+		}
 
-        int udpPort = 48899;
-
-        public Request(int timeout = 10000, int adsUdpPort = 48899)
+        public Request(int timeout = 10000)
         {
-            Timeout = timeout;
-
-            udpPort = adsUdpPort;
-
             client = new UdpClient();
             client.EnableBroadcast = true;
-            client.Client.ReceiveTimeout = client.Client.SendTimeout = Timeout;
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+            Timeout = timeout;
         }
 
         public async Task<Response> SendAsync(IPEndPoint endPoint)
